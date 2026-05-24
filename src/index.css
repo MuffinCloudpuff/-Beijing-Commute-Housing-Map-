@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Inter:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Noto Serif SC", ui-serif, Georgia, serif;
+}
+
+/* Gaode Maps Autocomplete Overrides */
+.amap-sug-result {
+  border: 1px solid #E5E0D8 !important;
+  border-radius: 16px !important;
+  background-color: rgba(253, 251, 247, 0.95) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025) !important;
+  padding: 8px !important;
+  font-family: var(--font-sans) !important;
+  margin-top: 8px !important;
+  z-index: 9999 !important;
+}
+
+.amap-sug-result .auto-item {
+  padding: 10px 12px !important;
+  border-radius: 8px !important;
+  color: #2D2A26 !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+  border-bottom: none !important;
+  margin-bottom: 2px !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  cursor: pointer !important;
+}
+
+.amap-sug-result .auto-item:last-child {
+  margin-bottom: 0 !important;
+}
+
+.amap-sug-result .auto-item:hover,
+.amap-sug-result .auto-item.active {
+  background-color: #F0EDE5 !important;
+  color: #5A5A40 !important;
+}
+
+.amap-sug-result .auto-item .auto-item-span {
+  color: #8E8A82 !important;
+  font-size: 12px !important;
+  font-weight: 400 !important;
+  margin-left: 8px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}

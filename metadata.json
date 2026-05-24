@@ -1,0 +1,10 @@
+{
+  "name": "Omnirouter",
+  "description": "Spatial distance matrix and multi-destination router powered by Gaode Maps.",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
