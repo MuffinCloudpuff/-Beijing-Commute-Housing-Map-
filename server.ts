@@ -92,6 +92,80 @@ async function startServer() {
     }
   });
 
+  // API Route to extract room layout from a floor plan image
+  app.post("/api/extract-floor-plan", async (req, res) => {
+    try {
+      const { imageBase64, mimeType } = req.body;
+      
+      if (!imageBase64 || !mimeType) {
+        return res.status(400).json({ error: "Missing image data" });
+      }
+
+      let response;
+      let retries = 5;
+      while (true) {
+        try {
+          response = await ai.models.generateContent({
+            model: "gemini-2.5-flash",
+            contents: {
+              parts: [
+                {
+                  inlineData: {
+                    data: imageBase64,
+                    mimeType,
+                  }
+                },
+                {
+                  text: "Analyze this floor plan image. Identify the major rooms (living room, bedroom, kitchen, bathroom, etc.). Estimate their relative proportions as widthPixels and heightPixels (e.g. 200 to 400 pixels typical range). Return a list of rooms."
+                }
+              ]
+            },
+            config: {
+              responseMimeType: "application/json",
+              responseSchema: {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    name: { type: Type.STRING, description: "Name of the room" },
+                    widthPixels: { type: Type.NUMBER, description: "Estimated width in pixels for rendering layout (e.g. 250)" },
+                    heightPixels: { type: Type.NUMBER, description: "Estimated height in pixels for rendering layout (e.g. 300)" },
+                  },
+                  required: ["name", "widthPixels", "heightPixels"],
+                }
+              }
+            }
+          });
+          break;
+        } catch (error: any) {
+          if (retries > 0 && (error.status === 429 || error.message?.includes('429') || error.message?.includes('RESOURCE_EXHAUSTED') || error.message?.includes('retry in'))) {
+            retries--;
+            let waitTime = 15000;
+            const retryMatch = error.message?.match(/retry in (\d+(\.\d+)?)s/);
+            if (retryMatch) {
+              waitTime = Math.ceil(parseFloat(retryMatch[1])) * 1000 + 1000;
+            }
+            console.log(`Rate limit hit. Retrying in ${waitTime}ms... (${retries} retries left)`);
+            await new Promise(resolve => setTimeout(resolve, waitTime));
+          } else {
+            throw error;
+          }
+        }
+      }
+      
+      const text = response.text || "[]";
+      try {
+        const rooms = JSON.parse(text.trim());
+        res.json({ rooms });
+      } catch (err) {
+        res.json({ rooms: [] });
+      }
+    } catch (error: any) {
+      console.error("Gemini API error:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({

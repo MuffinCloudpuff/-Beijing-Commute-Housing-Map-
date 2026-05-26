@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { GlassPanel } from './AuraLayout';
 import { motion } from 'motion/react';
-import { KeyRound, ShieldAlert, ArrowRight, Save } from 'lucide-react';
+import { KeyRound, ShieldAlert, ArrowRight, Save, LayoutTemplate } from 'lucide-react';
 
 interface SetupScreenProps {
   onSubmit?: (apiKey: string, secCode: string) => void;
+  onSwitchApp?: () => void;
 }
 
-export const SetupScreen: React.FC<SetupScreenProps> = ({ onSubmit }) => {
+export const SetupScreen: React.FC<SetupScreenProps> = ({ onSubmit, onSwitchApp }) => {
   const [apiKey, setApiKey] = useState('');
   const [secCode, setSecCode] = useState('');
 
@@ -71,7 +72,17 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({ onSubmit }) => {
           </button>
         </form>
 
-        <div className="w-full bg-[#FDFBF7] rounded-2xl p-5 border border-[#E5E0D8] flex flex-col gap-4 text-left mt-2">
+        {onSwitchApp && (
+          <button 
+            onClick={onSwitchApp}
+            className="mt-6 flex items-center justify-center gap-2 text-[#5A5A40] font-bold text-sm tracking-wide transition-all hover:opacity-80 pb-1 border-b border-transparent hover:border-[#5A5A40]"
+          >
+            <LayoutTemplate className="w-4 h-4" />
+            暂无地图密钥，直接进入「户型图规划」功能
+          </button>
+        )}
+
+        <div className="w-full bg-[#FDFBF7] rounded-2xl p-5 border border-[#E5E0D8] flex flex-col gap-4 text-left mt-6">
           <div className="flex items-start gap-3">
             <ShieldAlert className="w-5 h-5 text-[#D4A373] mt-0.5 shrink-0" />
             <p className="text-sm text-[#4A453E] leading-relaxed">

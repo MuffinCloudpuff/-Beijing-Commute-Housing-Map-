@@ -16,6 +16,7 @@ import {
   Download,
   Upload,
   Home,
+  ChevronDown,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { TravelMode, LocationPoint, RouteResult } from "../types/navigation";
@@ -39,7 +40,8 @@ import { FilterModeMenu } from "./FilterModeMenu";
 export const NavigationApp: React.FC<{
   apiKey: string;
   securityCode: string;
-}> = ({ apiKey, securityCode }) => {
+  onSwitchApp: () => void;
+}> = ({ apiKey, securityCode, onSwitchApp }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [amap, setAmap] = useState<any>(null);
   const [error, setError] = useState("");
@@ -397,12 +399,18 @@ export const NavigationApp: React.FC<{
       <div className="w-full md:w-[420px] h-[45vh] md:h-full bg-[#FDFBF7] shadow-xl z-20 flex flex-col border-r border-[#E5E0D8]">
         {/* Header (always visible) */}
         <div className="p-6 md:p-8 pb-4 shrink-0 bg-[#FDFBF7] border-b border-[#E5E0D8] shadow-sm z-10 flex flex-col gap-2">
-          <h1 className="text-3xl font-bold tracking-tighter text-[#2D2A26] font-serif">
-            智行点位导航
-          </h1>
-          <p className="text-[#8E8A82] font-mono text-xs uppercase tracking-widest pl-1">
-            多点空间距离矩阵
-          </p>
+          <button 
+            onClick={onSwitchApp}
+            className="group flex flex-col text-left hover:bg-[#F0EDE5] -ml-2 p-2 rounded-xl transition-colors w-max"
+          >
+            <h1 className="text-3xl font-bold tracking-tighter text-[#2D2A26] font-serif flex items-center gap-2">
+              智慧找房
+              <ChevronDown className="w-5 h-5 text-[#8E8A82] group-hover:text-[#2D2A26] transition-colors" />
+            </h1>
+            <p className="text-[#8E8A82] font-mono text-xs uppercase tracking-widest pl-1 mt-1">
+              多点空间距离矩阵
+            </p>
+          </button>
         </div>
 
         {/* Scrollable Content Area */}

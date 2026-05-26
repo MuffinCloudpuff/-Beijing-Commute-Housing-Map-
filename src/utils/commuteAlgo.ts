@@ -1,3 +1,5 @@
+import { safeGetStorage, safeSetStorage } from "./storage";
+
 export const CITY_CENTER = [116.397428, 39.90923];
 
 export const getTransferTime = async (
@@ -11,7 +13,7 @@ export const getTransferTime = async (
   const cacheKey = `transfer_time_${transferStation}_${keyParts[0]}_${keyParts[1]}`;
   let cache: Record<string, number> = {};
   try {
-    cache = JSON.parse(localStorage.getItem("subway_transfer_times") || "{}");
+    cache = JSON.parse(safeGetStorage("subway_transfer_times") || "{}");
   } catch (e) {}
 
   if (cache[cacheKey]) {
@@ -81,7 +83,7 @@ export const getTransferTime = async (
             if (tTime > 15) tTime = 15; // cap to 15 mins
 
             cache[cacheKey] = tTime;
-            localStorage.setItem(
+            safeSetStorage(
               "subway_transfer_times",
               JSON.stringify(cache),
             );
@@ -103,7 +105,7 @@ export const getSegmentTime = async (
   const cacheKey = `segment_time_${lineName}_${stopA.name}_${stopB.name}`;
   let cache: Record<string, number> = {};
   try {
-    cache = JSON.parse(localStorage.getItem("subway_segment_times") || "{}");
+    cache = JSON.parse(safeGetStorage("subway_segment_times") || "{}");
   } catch (e) {}
 
   if (cache[cacheKey]) {
@@ -145,7 +147,7 @@ export const getSegmentTime = async (
             if (tTime < 1) tTime = 1;
 
             cache[cacheKey] = tTime;
-            localStorage.setItem("subway_segment_times", JSON.stringify(cache));
+            safeSetStorage("subway_segment_times", JSON.stringify(cache));
           }
           resolve(tTime);
         },

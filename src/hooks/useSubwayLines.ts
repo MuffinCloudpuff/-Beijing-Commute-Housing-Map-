@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { safeGetStorage, safeSetStorage } from "../utils/storage";
 
 const BEIJING_SUBWAY_COLORS: Record<string, string> = {
   "1号线八通线": "#C23A30",
@@ -34,7 +35,7 @@ const getLineAvgTime = async (amap: any, lineName: string, stopsArr: any[]) => {
   const cacheKey = "subway_avg_time_cache_v1";
   let cache: Record<string, number> = {};
   try {
-    cache = JSON.parse(localStorage.getItem(cacheKey) || "{}");
+    cache = JSON.parse(safeGetStorage(cacheKey) || "{}");
   } catch (e) {}
 
   if (cache[lineName]) {
@@ -82,7 +83,7 @@ const getLineAvgTime = async (amap: any, lineName: string, stopsArr: any[]) => {
           if (avgTimeMins > 10) avgTimeMins = 10;
 
           cache[lineName] = avgTimeMins;
-          localStorage.setItem(cacheKey, JSON.stringify(cache));
+          safeSetStorage(cacheKey, JSON.stringify(cache));
         }
         resolve(avgTimeMins);
       },
@@ -100,6 +101,11 @@ export const useSubwayLines = (
   const isFetchingRef = useRef(false);
   const hasLoadedRef = useRef(false);
   const dynamicOverlaysRef = useRef<any[]>([]);
+  const showSubwayRef = useRef(showSubway);
+
+  useEffect(() => {
+    showSubwayRef.current = showSubway;
+  }, [showSubway]);
 
   // 1. Fetch data once eagerly
   useEffect(() => {
@@ -161,10 +167,14 @@ export const useSubwayLines = (
                     strokeOpacity: 0.9,
                     strokeStyle: "solid",
                     zIndex: 50,
-                    map: mapInstance,
                     bubble: true, // Allow events to bubble if needed
-                    visible: showSubway,
                   });
+                  if (showSubwayRef.current) {
+                    polyline.setMap(mapInstance);
+                  } else {
+                    polyline.setMap(mapInstance);
+                    polyline.hide();
+                  }
 
                   let stationOverlays: any[] = [];
                   let areStopsRendered = false;
@@ -283,9 +293,13 @@ export const useSubwayLines = (
                         "box-shadow": "0 2px 4px rgba(0,0,0,0.1)",
                       },
                       zIndex: 60,
-                      map: mapInstance,
-                      visible: showSubway,
                     });
+                    if (showSubwayRef.current) {
+                      textMarker.setMap(mapInstance);
+                    } else {
+                      textMarker.setMap(mapInstance);
+                      textMarker.hide();
+                    }
 
                     textMarker.on("mouseover", showLineDetails);
                     textMarker.on("mouseout", hideLineDetails);
